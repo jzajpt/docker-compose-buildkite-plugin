@@ -222,7 +222,7 @@ if [[ "$(plugin_read_config DEPENDENCIES "true")" == "true" ]] ; then
   echo "~~~ :docker: Starting dependencies"
   
   while IFS=$'\n' read -r replica ; do
-    [[ -n "${vol:-}" ]] && run_params+=("--scale" "$replica")
+    [[ -n "${vol:-}" ]] && run_params+=("--scale" "${replica}")
   done <<< "$(plugin_read_list REPLICAS)"
 
   if [[ ${#up_params[@]} -gt 0 ]] ; then
