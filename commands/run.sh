@@ -220,15 +220,16 @@ fi
 # Start up service dependencies in a different header to keep the main run with less noise
 if [[ "$(plugin_read_config DEPENDENCIES "true")" == "true" ]] ; then
   echo "~~~ :docker: Starting dependencies"
-  
+
+  scale_params=("--scale" "${run_service}=0")
   while IFS=$'\n' read -r replica ; do
-    [[ -n "${replica:-}" ]] && up_params+=("--scale" "${replica}")
+    [[ -n "${replica:-}" ]] && scale_params+=("--scale" "${replica}")
   done <<< "$(plugin_read_list REPLICAS)"
 
   if [[ ${#up_params[@]} -gt 0 ]] ; then
-    run_docker_compose "${up_params[@]}" up -d --scale "${run_service}=0" "${run_service}"
+    run_docker_compose "${up_params[@]}" up -d ${scale_params} "${run_service}"
   else
-    run_docker_compose up -d --scale "${run_service}=0" "${run_service}"
+    run_docker_compose up -d ${scale_params} "${run_service}"
   fi
 
   # Sometimes docker-compose leaves unfinished ansi codes
