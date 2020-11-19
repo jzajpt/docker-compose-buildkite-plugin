@@ -220,6 +220,11 @@ fi
 # Start up service dependencies in a different header to keep the main run with less noise
 if [[ "$(plugin_read_config DEPENDENCIES "true")" == "true" ]] ; then
   echo "~~~ :docker: Starting dependencies"
+  
+  while IFS=$'\n' read -r replica ; do
+    [[ -n "${vol:-}" ]] && run_params+=("--scale" "$vol")
+  done <<< "$(plugin_read_list REPLICAS)"
+
   if [[ ${#up_params[@]} -gt 0 ]] ; then
     run_docker_compose "${up_params[@]}" up -d --scale "${run_service}=0" "${run_service}"
   else
